@@ -1,16 +1,16 @@
-# A tweaked demobrowser
-The demobrowser is a Qt example on the QWebEngine class.
+# The Mousetracker Browser
+The Mousetracker Browser is an extended version of the Qt example using the QWebEngine.
 
 ## Introduction
-The tweaked demobrowser is a full web browser with history, bookmarks and almost all other important functionalities of any web browser.
-The added tweaks on this demobrowser make it capable of tracking user cursor movements on the web pages.
-The results are captured in a static screenshot of the whole web page when the user closes the tab, hit the save image button or click through pages.
+The added tweaks on this browser make it capable of tracking user cursor movements in sessions and produce screenshots with detailed mouse trails of the traced web pages.
+The screenshots are captured of the whole web page on session ending i.e. when the user closes the tab or on successful navigation requests i.e. when the user clicks through hyperlinks or on request by hitting the save image button in the address bar (old floppy disk).
 
-The tweaked demobrowser offers:
+## Features
+The Mousetracker Browser offers:
 <ul>
-<li> Analyzing mouse movements trails on the web page. </li>
-<li> A full screenshot of the web page that is viewed by the user. </li>
-<li> An adaption for the recordings on fixed elements on scrollable pages. </li>
+<li> An adaption for capturing the fixed elements on scrollable pages with their mouse recordings on a screenshot. </li>
+<li> A full screenshot of the web page that is viewed by the user with their mouse interactions. </li>
+<li> The ability to analyze the users' mouse moves on the web page. </li>
 </ul>
 
 
@@ -26,7 +26,7 @@ The tweaked demobrowser offers:
 </ul>
 </li>
 <br>
-<li> For a debugger among with the MSVC2015 compiler, CDB can be used from Windows SDK:
+<li> For a debugger among with the MSVC2015 compiler, CDB can be used from the Windows SDK:
 <ul>
 	<li> Download Windows SDK from "https://developer.microsoft.com/en-US/windows/downloads/windows-10-sdk" </li>
 	<li> Follow the installation wizard until the installation choices. Only the debugging tools choice is needed </li>
