@@ -35,7 +35,7 @@ LIBS += -LC:/Qt/openssl-1.0.2j-32bit-release-dll-vs2015/lib -lssleay32 -llibeay3
 INCLUDEPATH += C:/Qt/openssl-1.0.2j-32bit-release-dll-vs2015/include
 DEPENDPATH += C:/Qt/openssl-1.0.2j-32bit-release-dll-vs2015/include
 
-RESOURCES += ../data/data.qrc ../htmls/htmls.qrc \
+RESOURCES += data/data.qrc htmls/htmls.qrc \
     resources.qrc
 
 build_all:!build_pass {
@@ -48,13 +48,13 @@ win32 {
 }
 
 mac {
-    ICON = icons/demobrowser.icns
+    ICON = demobrowser.icns
     QMAKE_INFO_PLIST = Info_mac.plist
     TARGET = Demobrowser
 }
 
 EXAMPLE_FILES = \
-    Info_mac.plist icons/demobrowser.icns icons/demobrowser.ico demobrowser.rc
+    Info_mac.plist demobrowser.icns demobrowser.ico demobrowser.rc
 
 # install
 target.path = $$[QT_INSTALL_EXAMPLES]/webenginewidgets/demobrowser
