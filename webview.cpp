@@ -435,12 +435,16 @@ void WebView::updateScreenshot(const QVariant &info) {
             // create an image of the viewport
             QImage* image = new QImage(width(), height(), QImage::Format_ARGB32);
             QPainter painter(image);
+            image->fill(Qt::transparent);
             QRegion region = QRegion(image->rect());
             for(FixedElement *item: *m_fixedElements) {
-                QRectF rect = item->getRectangle();
-                region = region - QRegion(rect.x(), rect.y(), rect.width(), rect.height());
+                if(item->getIsVisible()) {
+                    QRectF rect = item->getRectangle();
+                    region = region - QRegion(rect.x(), rect.y(), rect.width(), rect.height());
+                }
             }
-            render(&painter, QPoint(0,0), region);
+            painter.setClipRegion(region);
+            render(&painter);
             painter.end();
 
             // run add next part
