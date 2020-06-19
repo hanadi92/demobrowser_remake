@@ -79,9 +79,9 @@
 
 WebPage::WebPage(QWebEngineProfile *profile, WebView *parent, ScreenShotter *screenshotter)
     : QWebEnginePage(profile, parent)
-    , m_keyboardModifiers(Qt::NoModifier)
     , screenshotter(screenshotter)
     , m_view(parent)
+    , m_keyboardModifiers(Qt::NoModifier)
     , m_pressedButtons(Qt::NoButton)
 {
 #if defined(QWEBENGINEPAGE_SETNETWORKACCESSMANAGER)
@@ -132,7 +132,6 @@ public:
     PopupWindow(QWebEngineProfile *profile, ScreenShotter *screenshotter)
         : m_addressBar(new QLineEdit(this))
         , m_view(new WebView(this, screenshotter))
-        , m_screenshotter(screenshotter)
     {
         m_view->setPage(new WebPage(profile, m_view, screenshotter));
         QVBoxLayout *layout = new QVBoxLayout;
@@ -169,8 +168,6 @@ private Q_SLOTS:
 private:
     QLineEdit *m_addressBar;
     WebView *m_view;
-    ScreenShotter *m_screenshotter;
-
 };
 
 #include "webview.moc"

@@ -1,0 +1,18 @@
+<RCC>
+    <qresource prefix="/">
+        <file>data/addtab.png</file>
+        <file>data/arrow.svg</file>
+        <file>data/closetab.png</file>
+        <file>data/defaultbookmarks.xbel</file>
+        <file>data/defaulticon.png</file>
+        <file>data/demobrowser.icns</file>
+        <file>data/demobrowser.ico</file>
+        <file>data/demobrowser.svg</file>
+        <file>data/down.svg</file>
+        <file>data/history.png</file>
+        <file>data/Info_mac.plist</file>
+        <file>data/loading.gif</file>
+        <file>data/scrollrect.svg</file>
+        <file>data/up.svg</file>
+    </qresource>
+</RCC>

@@ -35,8 +35,8 @@ SOURCES += \
 #INCLUDEPATH += C:/Qt/openssl-1.0.2j-32bit-release-dll-vs2015/include
 #DEPENDPATH += C:/Qt/openssl-1.0.2j-32bit-release-dll-vs2015/include
 
-RESOURCES += data/data.qrc htmls/htmls.qrc \
-    resources.qrc
+RESOURCES += ../data.qrc ../htmls/htmls.qrc \
+    ../resources.qrc
 
 build_all:!build_pass {
     CONFIG -= build_all
@@ -44,24 +44,24 @@ build_all:!build_pass {
 }
 
 win32 {
-   RC_FILE = demobrowser.rc
+   RC_FILE = ../data/demobrowser.rc
 }
 
 mac {
-    ICON = demobrowser.icns
-    QMAKE_INFO_PLIST = Info_mac.plist
+    ICON = ../data/demobrowser.icns
+    QMAKE_INFO_PLIST = ../data/Info_mac.plist
     TARGET = Demobrowser
 }
 
 EXAMPLE_FILES = \
-    Info_mac.plist demobrowser.icns demobrowser.ico demobrowser.rc
+    ./data/Info_mac.plist ./data/demobrowser.icns ./data/demobrowser.ico ./data/demobrowser.rc
 
 # install
-target.path = $$[QT_INSTALL_EXAMPLES]/webenginewidgets/demobrowser
+target.path = build
 INSTALLS += target
 
 DISTFILES +=
 
 FORMS += \
-    passworddialog.ui \
-    proxy.ui
+    ../ui/passworddialog.ui \
+    ../ui/proxy.ui
