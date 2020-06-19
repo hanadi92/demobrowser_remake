@@ -396,7 +396,7 @@ void WebView::checkScrollPosition() {
         page()->runJavaScript("var x = '';\
                               if(typeof getFixedElements == 'function') {\
                                     x = getFixedElements(1);\
-                               } [x, window.scrollX, window.scrollY];",
+                               } [x];",
                               QWebEngineScript::ApplicationWorld,
                               [this](const QVariant& info) {
             if(info.isValid() && !info.isNull()) {
@@ -410,13 +410,8 @@ void WebView::checkScrollPosition() {
 
 void WebView::updateScreenshot(const QVariant &info) {
     QList<QVariant> list = info.toList();
-    if(list.length() == 3) {
-        QPointF scrollPosition;
-        if(list[1].isValid() && list[2].isValid()) {
-            scrollPosition = QPointF(list[1].toFloat(), list[2].toFloat());
-        } else {
-            scrollPosition = page()->scrollPosition();
-        }
+    if(list.length() == 1) {
+        QPointF scrollPosition = page()->scrollPosition();
 
         screenshotter->setScrollPosition(scrollPosition);
 
@@ -448,7 +443,7 @@ void WebView::updateScreenshot(const QVariant &info) {
             painter.end();
 
             // run add next part
-            QtConcurrent::run(screenshotter, &ScreenShotter::addNextPart, image, scrollPosition);
+            QtConcurrent::run(screenshotter, &ScreenShotter::addNextPart, image, page()->scrollPosition());
         }
 
         screenshotter->setLastScrollPosition(scrollPosition);

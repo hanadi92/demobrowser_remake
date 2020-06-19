@@ -490,7 +490,7 @@ void BrowserApplication::setPrivateBrowsing(bool privateBrowsing)
         Q_FOREACH (BrowserMainWindow* window, mainWindows()) {
             // will be overwritten by initprofile
             window->tabWidget()->setProfile(window->tabWidget()->initProfile());
-            window->m_lastSearch = QString::null;
+            window->m_lastSearch = QString();
             window->tabWidget()->clear();
         }
     }

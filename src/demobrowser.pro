@@ -9,7 +9,6 @@ else: DEFINES += QT_NO_UITOOLS
 HEADERS += \
     browserapplication.h \
     browsermainwindow.h \
-    modelmenu.h \
     searchlineedit.h \
     tabwidget.h \
     urllineedit.h \
@@ -21,7 +20,6 @@ HEADERS += \
 SOURCES += \
     browserapplication.cpp \
     browsermainwindow.cpp \
-    modelmenu.cpp \
     searchlineedit.cpp \
     tabwidget.cpp \
     urllineedit.cpp \
