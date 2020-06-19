@@ -55,6 +55,7 @@
 #include "urllineedit.h"
 #include "webview.h"
 #include "screenshotter.h"
+#include "webrtc.h"
 
 #include <QWebEngineProfile>
 #include <QtCore/QMimeData>
@@ -221,9 +222,10 @@ TabWidget::TabWidget(QWidget *parent)
     , m_lineEdits(0)
     , m_tabBar(new TabBar(this))
     , m_profile(nullptr)
-    , screenshotter(new ScreenShotter(this))
-    , currentUrl("")
-    , Pcounter(0)
+    , m_screenshotter(new ScreenShotter(this))
+    , m_currentUrl("")
+    , m_sessionCounter(0)
+    , m_webRTC(nullptr)
 {
 //    initProfile();
 
@@ -264,23 +266,23 @@ TabWidget::TabWidget(QWidget *parent)
     m_lineEdits = new QStackedWidget(this);
 }
 
-void TabWidget::setPcounter(const qint64 pc) {
-    Pcounter = pc;
+void TabWidget::setSessionCounter(const qint64 sc) {
+    m_sessionCounter = sc;
 }
 
 
 void TabWidget::setCurrentUrl(const QString &value)
 {
-    currentUrl = value;
+    m_currentUrl = value;
 }
 
 QString TabWidget::getCurrentUrl() const
 {
-    return currentUrl;
+    return m_currentUrl;
 }
 
 void TabWidget::screenshotSaveImage() {
-    screenshotter->saveImage(currentWebView(), getPcounter(), false);
+    m_screenshotter->saveImage(currentWebView(), getSessionCounter(), false);
 }
 
 void TabWidget::prepairProfileJavaScript() {
@@ -476,8 +478,8 @@ WebView *TabWidget::newTab(bool makeCurrent)
     }
 
     // webview
-    WebView *webView = new WebView(this, screenshotter);
-    webView->setPage(new WebPage(m_profile, webView, screenshotter));
+    WebView *webView = new WebView(this, m_screenshotter);
+    webView->setPage(new WebPage(webView, m_screenshotter));
     urlLineEdit->setWebView(webView);
     connect(webView, SIGNAL(loadStarted()),
             this, SLOT(webViewLoadStarted()));
@@ -498,6 +500,10 @@ WebView *TabWidget::newTab(bool makeCurrent)
     if (count() == 1)
         currentChanged(currentIndex());
     emit tabsChanged();
+
+    if(m_webRTC == nullptr) {
+        m_webRTC = new WebRTC(this);
+    }
     return webView;
 }
 
@@ -583,7 +589,7 @@ void TabWidget::setProfile(QWebEngineProfile *profile)
     for (int i = 0; i < count(); ++i) {
         QWidget *tabWidget = widget(i);
         if (WebView *tab = qobject_cast<WebView*>(tabWidget)) {
-            WebPage* webPage = new WebPage(m_profile, tab, screenshotter);
+            WebPage* webPage = new WebPage(tab, m_screenshotter);
             setupPage(webPage);
             webPage->load(tab->page()->url());
             tab->setPage(webPage);
@@ -675,7 +681,7 @@ void TabWidget::mouseReleaseEvent(QMouseEvent *event)
 
 ScreenShotter *TabWidget::getScreenshoter() const
 {
-    return screenshotter;
+    return m_screenshotter;
 }
 
 void TabWidget::loadUrlInCurrentTab(const QUrl &url)

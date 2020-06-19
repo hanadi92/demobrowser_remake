@@ -12,6 +12,7 @@ HEADERS += \
     searchlineedit.h \
     tabwidget.h \
     urllineedit.h \
+    webrtc.h \
     webview.h \
     screenshotter.h \
     fixedelement.h \
@@ -23,6 +24,7 @@ SOURCES += \
     searchlineedit.cpp \
     tabwidget.cpp \
     urllineedit.cpp \
+    webrtc.cpp \
     webview.cpp \
     main.cpp \
     screenshotter.cpp \
@@ -41,15 +43,13 @@ build_all:!build_pass {
     CONFIG += release
 }
 
-win32 {
-   RC_FILE = ../data/demobrowser.rc
-}
-
 mac {
     ICON = ../data/demobrowser.icns
     QMAKE_INFO_PLIST = ../data/Info_mac.plist
     TARGET = Demobrowser
 }
+
+RC_FILE = ../demobrowser.rc
 
 EXAMPLE_FILES = \
     ./data/Info_mac.plist ./data/demobrowser.icns ./data/demobrowser.ico ./data/demobrowser.rc

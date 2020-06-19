@@ -77,9 +77,9 @@
 #include <QtCore/QBuffer>
 #include <QtCore/QTimer>
 
-WebPage::WebPage(QWebEngineProfile *profile, WebView *parent, ScreenShotter *screenshotter)
-    : QWebEnginePage(profile, parent)
-    , screenshotter(screenshotter)
+WebPage::WebPage(WebView *parent, ScreenShotter *screenshotter)
+    : QWebEnginePage(parent->getParentTabWidget()->getProfile(), parent)
+    , m_screenshotter(screenshotter)
     , m_view(parent)
     , m_keyboardModifiers(Qt::NoModifier)
     , m_pressedButtons(Qt::NoButton)
@@ -129,11 +129,11 @@ bool WebPage::certificateError(const QWebEngineCertificateError &error)
 class PopupWindow : public TabWidget {
     Q_OBJECT
 public:
-    PopupWindow(QWebEngineProfile *profile, ScreenShotter *screenshotter)
+    PopupWindow(ScreenShotter *screenshotter)
         : m_addressBar(new QLineEdit(this))
         , m_view(new WebView(this, screenshotter))
     {
-        m_view->setPage(new WebPage(profile, m_view, screenshotter));
+        m_view->setPage(new WebPage(m_view, screenshotter));
         QVBoxLayout *layout = new QVBoxLayout;
         layout->setMargin(0);
         setLayout(layout);
@@ -183,7 +183,7 @@ QWebEnginePage *WebPage::createWindow(QWebEnginePage::WebWindowType type)
         BrowserMainWindow *mainWindow = BrowserApplication::instance()->mainWindow();
         return mainWindow->currentTab()->page();
     } else {
-        PopupWindow *popup = new PopupWindow(profile(), screenshotter);
+        PopupWindow *popup = new PopupWindow(m_screenshotter);
         popup->setAttribute(Qt::WA_DeleteOnClose);
         popup->show();
         return popup->page();
@@ -348,12 +348,12 @@ WebView::WebView(TabWidget *parent, ScreenShotter *screenshotter)
     : QWebEngineView(parent)
     , m_progress(0)
     , m_page(0)
-    , checkScrollPositionTimer(new QTimer(this))
-    , screenshotter(screenshotter)
+    , m_checkScrollPositionTimer(new QTimer(this))
+    , m_screenshotter(screenshotter)
     , m_fixedElements(new QVector<FixedElement*>)
-    , firstTimeActive(true)
-    , parentTabWidget(parent)
-    , scrollPositionTime(200)
+    , m_firstTimeActive(true)
+    , m_parentTabWidget(parent)
+    , m_scrollPositionTime(200)
 {
     connect(this, SIGNAL(loadProgress(int)),
             this, SLOT(setProgress(int)));
@@ -380,7 +380,7 @@ WebView::WebView(TabWidget *parent, ScreenShotter *screenshotter)
         qInfo() << "Render process exited with code" << statusCode << status;
         QTimer::singleShot(0, [this] { reload(); });
     });
-    connect(checkScrollPositionTimer, SIGNAL(timeout()), this, SLOT(checkScrollPositionTimeout()));
+    connect(m_checkScrollPositionTimer, SIGNAL(timeout()), this, SLOT(checkScrollPositionTimeout()));
 }
 
 void WebView::checkScrollPositionTimeout() {
@@ -391,7 +391,7 @@ void WebView::checkScrollPositionTimeout() {
 
 void WebView::checkScrollPosition() {
     qint64 ts = QDateTime::currentMSecsSinceEpoch();
-    if(!page()->url().isEmpty() && (ts - screenshotter->getLastImageSaveTimestamp()) > 500) {
+    if(!page()->url().isEmpty() && (ts - m_screenshotter->getLastImageSaveTimestamp()) > 500) {
 
         page()->runJavaScript("var x = '';\
                               if(typeof getFixedElements == 'function') {\
@@ -408,15 +408,20 @@ void WebView::checkScrollPosition() {
     }
 }
 
+TabWidget *WebView::getParentTabWidget() const
+{
+    return m_parentTabWidget;
+}
+
 void WebView::updateScreenshot(const QVariant &info) {
     QList<QVariant> list = info.toList();
     if(list.length() == 1) {
         QPointF scrollPosition = page()->scrollPosition();
 
-        screenshotter->setScrollPosition(scrollPosition);
+        m_screenshotter->setScrollPosition(scrollPosition);
 
-        QPointF lastScrollPosition = screenshotter->getLastScrollPosition();
-        QPoint bigImageCoord = screenshotter->getBigImageCoord();
+        QPointF lastScrollPosition = m_screenshotter->getLastScrollPosition();
+        QPoint bigImageCoord = m_screenshotter->getBigImageCoord();
 
         if(scrollPosition == lastScrollPosition
                 || (scrollPosition.y() > lastScrollPosition.y() && scrollPosition.y() >= bigImageCoord.y() - 100)
@@ -443,10 +448,10 @@ void WebView::updateScreenshot(const QVariant &info) {
             painter.end();
 
             // run add next part
-            QtConcurrent::run(screenshotter, &ScreenShotter::addNextPart, image, page()->scrollPosition());
+            QtConcurrent::run(m_screenshotter, &ScreenShotter::addNextPart, image, page()->scrollPosition());
         }
 
-        screenshotter->setLastScrollPosition(scrollPosition);
+        m_screenshotter->setLastScrollPosition(scrollPosition);
     }
 }
 
@@ -519,7 +524,7 @@ FixedElement* WebView::getFixedElementOfXPath(const QString &xpath) {
 }
 
 void WebView::mouseMoveDetected(const QPoint& move) {
-    screenshotter->addMouseMovePosition(move, this);
+    m_screenshotter->addMouseMovePosition(move, this);
 }
 
 void WebView::deleteFixedElements() {
@@ -530,17 +535,17 @@ void WebView::deleteFixedElements() {
 }
 
 void WebView::activate() {
-    checkScrollPositionTimer->start(scrollPositionTime);
-    parentTabWidget->setCurrentUrl(url().toString());
-    firstTimeActive = false;
-    parentTabWidget->setPcounter(parentTabWidget->getPcounter()+1);
+    m_checkScrollPositionTimer->start(m_scrollPositionTime);
+    m_parentTabWidget->setCurrentUrl(url().toString());
+    m_firstTimeActive = false;
+    m_parentTabWidget->setSessionCounter(m_parentTabWidget->getSessionCounter()+1);
 }
 
 void WebView::deactivate() {
-    if(checkScrollPositionTimer->isActive()) {
-        checkScrollPositionTimer->stop();
+    if(m_checkScrollPositionTimer->isActive()) {
+        m_checkScrollPositionTimer->stop();
         if(!page()->url().isEmpty()) {
-            screenshotter->saveImage(this, parentTabWidget->getPcounter(), true);
+            m_screenshotter->saveImage(this, m_parentTabWidget->getSessionCounter(), true);
         }
     }
 }
@@ -566,27 +571,27 @@ void WebView::setPage(WebPage *_page)
 bool WebView::navigationRequest(const QUrl &newUrl)
 {
     QString newURL = newUrl.toString();
-    QString oldUrlString = parentTabWidget->getCurrentUrl();
-    if(firstTimeActive || (!newUrl.isEmpty())) {
+    QString oldUrlString = m_parentTabWidget->getCurrentUrl();
+    if(m_firstTimeActive || (!newUrl.isEmpty())) {
         handleUrlChange(oldUrlString, newURL);
     }
     return true;
 }
 
 void WebView::handleUrlChange(const QString &oldUrlString, const QString &newUrlString) {
-    if(!firstTimeActive && oldUrlString != newUrlString) {
-        if(checkScrollPositionTimer->isActive())
-            checkScrollPositionTimer->stop();
+    if(!m_firstTimeActive && oldUrlString != newUrlString) {
+        if(m_checkScrollPositionTimer->isActive())
+            m_checkScrollPositionTimer->stop();
 
-        parentTabWidget->setCurrentUrl(newUrlString);
+        m_parentTabWidget->setCurrentUrl(newUrlString);
 
-        bool isSaved = screenshotter->saveImage(this, parentTabWidget->getPcounter(), true);
+        bool isSaved = m_screenshotter->saveImage(this, m_parentTabWidget->getSessionCounter(), true);
         if(isSaved) {
-            parentTabWidget->setPcounter(parentTabWidget->getPcounter());
+            m_parentTabWidget->setSessionCounter(m_parentTabWidget->getSessionCounter());
         }
 
-        if(!checkScrollPositionTimer->isActive())
-            checkScrollPositionTimer->start(scrollPositionTime);
+        if(!m_checkScrollPositionTimer->isActive())
+            m_checkScrollPositionTimer->start(m_scrollPositionTime);
     }
 }
 

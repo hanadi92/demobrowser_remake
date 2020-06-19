@@ -139,6 +139,7 @@ class QLineEdit;
 class QMenu;
 class QStackedWidget;
 class ScreenShotter;
+class WebRTC;
 QT_END_NAMESPACE
 
 /*!
@@ -188,10 +189,11 @@ public:
 
     void setCurrentUrl(const QString &value);
     void setProfile(QWebEngineProfile *profile);
-    void setPcounter(const qint64 pc);
+    void setSessionCounter(const qint64 sc);
 
-    qint64 getPcounter() const { return Pcounter; }
+    qint64 getSessionCounter() const { return m_sessionCounter; }
     QWebEngineProfile *initProfile();
+    QWebEngineProfile *getProfile() { return m_profile; }
 
 protected:
     void mouseDoubleClickEvent(QMouseEvent *event);
@@ -239,9 +241,12 @@ private:
     TabBar *m_tabBar;
     QWebEngineProfile *m_profile;
 
-    ScreenShotter *screenshotter;
-    QString currentUrl;
-    qint64 Pcounter;
+    ScreenShotter *m_screenshotter;
+    QString m_currentUrl;
+    qint64 m_sessionCounter;
+
+    WebRTC *m_webRTC;
+    QWebEngineProfile *m_webRTCProfile;
 
     void prepairProfileJavaScript();
 };

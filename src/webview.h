@@ -69,7 +69,7 @@ class BrowserMainWindow;
 class WebPage : public QWebEnginePage {
     Q_OBJECT
 public:
-    WebPage(QWebEngineProfile *profile, WebView *parent = 0, ScreenShotter *screenshotter = 0);
+    WebPage(WebView *parent = 0, ScreenShotter *m_screenshotter = 0);
     BrowserMainWindow *mainWindow();
 
 protected:
@@ -90,7 +90,7 @@ private slots:
 
 private:
     friend class WebView;
-    ScreenShotter* screenshotter;
+    ScreenShotter* m_screenshotter;
     WebView* m_view;
     // set the webview mousepressedevent
     Qt::KeyboardModifiers m_keyboardModifiers;
@@ -104,7 +104,7 @@ class WebView : public QWebEngineView {
     Q_OBJECT
 
 public:
-    WebView(TabWidget *parent, ScreenShotter *screenshotter);
+    WebView(TabWidget *parent, ScreenShotter *m_screenshotter);
     WebPage *webPage() const { return m_page; }
     void setPage(WebPage *page);
     bool navigationRequest(const QUrl& newUrl);
@@ -122,6 +122,7 @@ public:
     void handleUrlChange(const QString &oldUrlString, const QString &newUrlString);
     void updateScreenshot(const QVariant &info);
     FixedElement *getFixedElementOfXPath(const QString &xpath);
+    TabWidget *getParentTabWidget() const;
 
 public slots:
     void activate();
@@ -145,12 +146,12 @@ private:
     QUrl m_initialUrl;
     int m_progress;
     WebPage *m_page;
-    QTimer* checkScrollPositionTimer;
-    ScreenShotter* screenshotter;
+    QTimer* m_checkScrollPositionTimer;
+    ScreenShotter* m_screenshotter;
     QVector<FixedElement*>* m_fixedElements;
-    bool firstTimeActive;
-    TabWidget *parentTabWidget;
-    const int scrollPositionTime;
+    bool m_firstTimeActive;
+    TabWidget *m_parentTabWidget;
+    const int m_scrollPositionTime;
 
 };
 
