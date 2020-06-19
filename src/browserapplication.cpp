@@ -203,7 +203,7 @@ void BrowserApplication::postLaunch()
     QWebEngineSettings::setOfflineStoragePath(directory);
 #endif
 
-    setWindowIcon(QIcon(QLatin1String(":demobrowser.svg")));
+    setWindowIcon(QIcon(QLatin1String(":/data/demobrowser.svg")));
 
     loadSettings();
 

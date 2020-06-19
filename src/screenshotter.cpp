@@ -95,7 +95,7 @@ void ScreenShotter::addMouseMoves(WebView *view)
 {
     int height = view->height();
 
-    QString cursorfile = ":arrow.svg";
+    QString cursorfile = ":/data/arrow.svg";
     QImage* cursor = new QImage(cursorfile);
     QImage cursorSmall = cursor->scaled(15,15);
     delete cursor;
