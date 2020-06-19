@@ -65,6 +65,9 @@
 #include <QtGui/QMouseEvent>
 #include <QWebEngineScript>
 #include <QWebEngineContextMenuData>
+#include <QWebEngineCertificateError>
+
+#include <QStyle>
 
 #ifndef QT_NO_UITOOLS
 #include <QtUiTools/QUiLoader>

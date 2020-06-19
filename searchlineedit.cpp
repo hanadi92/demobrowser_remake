@@ -56,6 +56,8 @@
 #include <QtWidgets/QStyle>
 #include <QtWidgets/QStyleOptionFrame>
 
+#include <QPainterPath>
+
 ClearButton::ClearButton(QWidget *parent)
   : QAbstractButton(parent)
 {

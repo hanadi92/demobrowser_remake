@@ -69,6 +69,8 @@
 #include <QWebEngineProfile>
 #include <QWebEngineSettings>
 
+#include <QStyle>
+
 #include <QtCore/QDebug>
 
 template<typename Arg, typename R, typename C>
@@ -89,8 +91,8 @@ InvokeWrapper<Arg, R, C> invoke(R *receiver, void (C::*memberFun)(Arg))
 
 const char *BrowserMainWindow::defaultHome = "http://qt.io/";
 
-BrowserMainWindow::BrowserMainWindow(QWidget *parent, Qt::WindowFlags flags)
-    : QMainWindow(parent, flags)
+BrowserMainWindow::BrowserMainWindow(QWidget *parent)
+    : QMainWindow(parent)
     , m_tabWidget(new TabWidget(this))
     , m_historyBack(0)
     , m_historyForward(0)

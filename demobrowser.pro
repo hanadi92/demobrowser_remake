@@ -31,9 +31,9 @@ SOURCES += \
     fixedelement.cpp \
     mousetracker.cpp
 
-LIBS += -LC:/Qt/openssl-1.0.2j-32bit-release-dll-vs2015/lib -lssleay32 -llibeay32
-INCLUDEPATH += C:/Qt/openssl-1.0.2j-32bit-release-dll-vs2015/include
-DEPENDPATH += C:/Qt/openssl-1.0.2j-32bit-release-dll-vs2015/include
+#LIBS += -LC:/Qt/openssl-1.0.2j-32bit-release-dll-vs2015/lib -lssleay32 -llibeay32
+#INCLUDEPATH += C:/Qt/openssl-1.0.2j-32bit-release-dll-vs2015/include
+#DEPENDPATH += C:/Qt/openssl-1.0.2j-32bit-release-dll-vs2015/include
 
 RESOURCES += data/data.qrc htmls/htmls.qrc \
     resources.qrc
